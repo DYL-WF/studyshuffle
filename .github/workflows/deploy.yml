@@ -1,9 +1,12 @@
+name: deploy
+run-name: Build and Deploy maven prpject
+on:
+  push:
+    branches:
+      - release
 jobs:
-  deploy:
-    on:
-      push:
-        branches:
-          - release
+  Build-Job:runs-on: 
+    ubuntu-latest:
     steps:
       - uses: actions/checkout@v4
 
