@@ -5,8 +5,8 @@ on:
     branches:
       - release
 jobs:
-  Build-Job:runs-on: 
-    ubuntu-latest:
+  Build-Job:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
