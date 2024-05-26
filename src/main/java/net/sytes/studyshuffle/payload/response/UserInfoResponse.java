@@ -4,13 +4,13 @@ import java.util.List;
 
 public class UserInfoResponse {
 	private Long id;
-	private String userId;
+	private String username;
 	private String email;
 	private List<String> roles;
 
-	public UserInfoResponse(Long id, String userId, String email, List<String> roles) {
+	public UserInfoResponse(Long id, String username, String email, List<String> roles) {
 		this.id = id;
-		this.userId = userId;
+		this.username = username;
 		this.email = email;
 		this.roles = roles;
 	}
@@ -31,12 +31,12 @@ public class UserInfoResponse {
 		this.email = email;
 	}
 
-	public String getUserId() {
-		return userId;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public List<String> getRoles() {

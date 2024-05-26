@@ -1,38 +1,38 @@
 package net.sytes.studyshuffle.controllers;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 //for Angular Client (withCredentials)
 //@CrossOrigin(origins = "http://localhost:8081", maxAge = 3600, allowCredentials="true")
 @CrossOrigin(origins = "*", maxAge = 3600)
-@RestController
-@RequestMapping("/api/test")
-public class TestController {
+@Controller
+@RequestMapping("/api/home/user")
+public class HomeController {
   @GetMapping("/all")
   public String allAccess() {
     return "Public Content.";
   }
 
-  @GetMapping("/user")
-  @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+  @GetMapping("/student")
+  @PreAuthorize("hasRole('STUDENT')")
   public String userAccess() {
-    return "User Content.";
+    return "student";
   }
 
-  @GetMapping("/mod")
-  @PreAuthorize("hasRole('MODERATOR')")
+  @GetMapping("/teacher")
+  @PreAuthorize("hasRole('TEACHER')")
   public String moderatorAccess() {
-    return "Moderator Board.";
+    return "teacher";
   }
 
   @GetMapping("/admin")
   @PreAuthorize("hasRole('ADMIN')")
   public String adminAccess() {
-    return "Admin Board.";
+    return "admin";
   }
 
 

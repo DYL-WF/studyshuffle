@@ -44,22 +44,29 @@ public class JwtUtils {
   }
 
   public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
+    logger.debug(userPrincipal.getUsername());
     String jwt = generateTokenFromUsername(userPrincipal.getUsername());
     ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge(24 * 60 * 60).httpOnly(true).build();
     return cookie;
   }
+
+    // public String generateJwtCookie(UserDetailsImpl userPrincipal) {
+    //   logger.debug(userPrincipal.getUsername());
+    //   return "cookie";
+    // }
 
   public ResponseCookie getCleanJwtCookie() {
     ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
     return cookie;
   }
 
-  public String getUserIdFromJwtToken(String token) {
+  public String getUsernameFromJwtToken(String token) {
     return Jwts.parserBuilder().setSigningKey(key()).build()
         .parseClaimsJws(token).getBody().getSubject();
   }
   
   private Key key() {
+    logger.debug("keys");
     return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
   }
 
@@ -80,9 +87,9 @@ public class JwtUtils {
     return false;
   }
   
-  public String generateTokenFromUsername(String userId) {   
+  public String generateTokenFromUsername(String username) {   
     return Jwts.builder()
-              .setSubject(userId)
+              .setSubject(username)
               .setIssuedAt(new Date())
               .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
               .signWith(key(), SignatureAlgorithm.HS256)

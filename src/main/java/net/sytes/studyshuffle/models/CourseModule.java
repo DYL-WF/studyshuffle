@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "modules")
-public class Module {
+public class CourseModule {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -25,8 +25,8 @@ public class Module {
 
   @Column(name="weekday")
   private int weekday;
-  
-  public Module() {
+
+  public CourseModule() {
 
   }
 
