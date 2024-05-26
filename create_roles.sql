@@ -1,0 +1,1 @@
+insert into roles(name) values ('ROLE_STUDENT'), ('ROLE_TEACHER'), ('ROLE_ADMIN');

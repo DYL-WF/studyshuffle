@@ -59,17 +59,12 @@ public class WebSecurityConfig {
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> 
           auth.requestMatchers("/api/auth/**").permitAll()
-            .requestMatchers("/api/test/**").permitAll()
+            .requestMatchers("/api/home/user/**").permitAll()
             .requestMatchers("/favicon.ico").permitAll()
             .requestMatchers("/register").permitAll()
-            .requestMatchers("/home").permitAll()
+            .requestMatchers("/index").permitAll()
+            .requestMatchers("/login").permitAll()
             .anyRequest().authenticated()
-        ).formLogin(
-          form -> form
-            .loginPage("/login")
-            .loginProcessingUrl("/api/auth/login")
-            .defaultSuccessUrl("/home")
-            .permitAll()
         );
     
     http.authenticationProvider(authenticationProvider());

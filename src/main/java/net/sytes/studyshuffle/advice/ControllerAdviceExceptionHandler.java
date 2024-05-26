@@ -24,6 +24,6 @@ public class ControllerAdviceExceptionHandler {
         ex.getMessage(),
         request.getDescription(false));
     
-    return new ResponseEntity<ErrorMessage>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
   }
 }

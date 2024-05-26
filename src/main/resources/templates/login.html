@@ -33,7 +33,7 @@
         <div class="col-md-6 offset-md-3">
 
             <div th:if="${param.error}">
-                <div class="alert alert-danger">Invalid ID or Password</div>
+                <div class="alert alert-danger" th:text="${param.error}">Invalid ID or Password</div>
             </div>
             <div th:if="${param.logout}">
                 <div class="alert alert-success"> You have been logged out.</div>
@@ -54,9 +54,8 @@
                             <label class="control-label"> Student/Employee Number</label>
                             <input
                                 type="text"
-                                id="userId"
-                                th:field="*{userId}"
-                                name="userId"
+                                id="username"
+                                name="username"
                                 class="form-control"
                                 placeholder="student/employee number"
                             />
@@ -67,7 +66,6 @@
                             <input
                                     type="password"
                                     id="password"
-                                    th:field="*{password}"
                                     name="password"
                                     class="form-control"
                                     placeholder="enter password"
