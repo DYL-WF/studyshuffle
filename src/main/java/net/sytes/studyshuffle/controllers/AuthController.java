@@ -1,8 +1,10 @@
 package net.sytes.studyshuffle.controllers;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +33,7 @@ import net.sytes.studyshuffle.models.ERole;
 import net.sytes.studyshuffle.models.Role;
 import net.sytes.studyshuffle.models.User;
 import net.sytes.studyshuffle.payload.request.LoginRequest;
+import net.sytes.studyshuffle.payload.request.RegisterRequest;
 import net.sytes.studyshuffle.payload.request.SignupRequest;
 import net.sytes.studyshuffle.repository.RoleRepository;
 import net.sytes.studyshuffle.repository.UserRepository;
@@ -62,11 +66,10 @@ public class AuthController {
   JwtUtils jwtUtils;
 
   @PostMapping(path="/login")
-  public ResponseEntity<?> authenticateUser(@Valid @RequestBody @ModelAttribute LoginRequest loginRequest) {
+  public ResponseEntity<?> authenticateUser(@Valid @RequestBody @ModelAttribute LoginRequest loginRequest, Model model) {
     HttpHeaders headers = new HttpHeaders();
 
     logger.info("{} is attempting to login", loginRequest.getUsername());
-    logger.info("{} is attempting to login", loginRequest.getPassword());
     
     Authentication authentication = authenticationManager
         .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -83,9 +86,22 @@ public class AuthController {
 
     String redirect="/login";
     if(roles.get(0)=="ROLE_STUDENT"){
-      redirect ="/api/home/user/student";
+      Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
+      if(user.get().getRegistered()){
+        redirect ="/api/home/user/student?registered";
+      }
+      else{
+        redirect ="/api/home/user/student?notregistered&username="+userDetails.getUsername();
+      }
     }else if(roles.get(0)=="ROLE_TEACHER"){
+      List<User> registredUsers = userRepository.findByRegisteredTrue();
+      List<String> students = new ArrayList<String>();
+      for (User u : registredUsers) {
+        logger.info("{}", u.getUsername());
+        students.add(u.getUsername());
+      }
       redirect ="/api/home/user/teacher";
+      redirect += "?student=" + students.stream().collect(Collectors.joining("&student="));
     }else if(roles.get(0)=="ROLE_ADMIN"){
       redirect ="/api/home/user/admin";
     }
@@ -135,6 +151,8 @@ public class AuthController {
       Set<String> strRoles = signUpRequest.getRole();
       Set<Role> roles = new HashSet<>();
 
+
+      logger.info("Role is set to {} ", signUpRequest.getRole());
       if (strRoles == null) {
         Role userRole = roleRepository.findByName(ERole.ROLE_STUDENT)
             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -142,16 +160,16 @@ public class AuthController {
       } else {
         strRoles.forEach(role -> {
           switch (role) {
-            case "admin":
-              Role adminRole = roleRepository.findByName(ERole.ROLE_TEACHER)
+            case "teacher":
+              Role teacherRole = roleRepository.findByName(ERole.ROLE_TEACHER)
                   .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-              roles.add(adminRole);
+              roles.add(teacherRole);
 
               break;
-            case "mod":
-              Role modRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+            case "admin":
+              Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                   .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-              roles.add(modRole);
+              roles.add(adminRole);
 
               break;
             default:
@@ -164,6 +182,7 @@ public class AuthController {
 
       user.setRoles(roles);
       userRepository.save(user);
+      logger.info("User has been saved to database ", signUpRequest.getRole());
 
       headers.setLocation(URI.create("/login"));
 
@@ -180,11 +199,26 @@ public class AuthController {
 
   @PostMapping("/logout")
   public ResponseEntity<?> logoutUser() {
+    logger.info("A user has logged out");
     ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
     HttpHeaders headers = new HttpHeaders();
 
     headers.setLocation(URI.create("/login"));
     headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+    return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+  }
+
+  @PostMapping("/registercourse")
+  public ResponseEntity<?> registerCourse(@Valid @RequestBody @ModelAttribute RegisterRequest registerRequest) {
+
+    logger.info("User {} is attempting to register for the module",registerRequest.getUsername());
+    Optional<User> user = userRepository.findByUsername(registerRequest.getUsername());
+    HttpHeaders headers = new HttpHeaders();
+
+    user.get().setRegistered(true);
+    userRepository.save(user.get());
+    headers.setLocation(URI.create("/api/home/user/student?registered=yes"));
+    logger.info("User {} has successfully registered for the module", registerRequest.getUsername());
     return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
   }
 }

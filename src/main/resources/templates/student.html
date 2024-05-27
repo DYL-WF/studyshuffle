@@ -9,7 +9,7 @@
           rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
           crossorigin="anonymous">
-    <style>
+    <!-- <style>
         .inline {
         display: inline;
         }
@@ -29,12 +29,12 @@
         .link-button:active {
         color:red;
         }
-    </style>
+    </style> -->
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/index}">Study Shuffle</a>
+        <a class="navbar-brand" th:href="@{/index}">Student Home</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -56,11 +56,21 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h2 class="text-center">Home</h2>
+                    <h2 class="text-center">Student Home Page</h2>
                 </div>
                 
                 <div class="card-body">
-                    <h4 class="text-center">Welcome Student!</h4>
+                    <h4 class="text-center">Welcome!</h4>
+
+                    <div th:if="${param.registered}">
+                        <h4 class="text-center">You have been registered for COS720!</h4>
+                    </div>
+                    <div th:if="${param.notregistered}">
+                        <form method="post" th:action="@{/api/auth/registercourse}" class="inline">
+                            <input type="hidden" name="username" th:value="${param.username}">
+                            <button type="submit" name="submit_param" value="submit_value" class="link-button">Register</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

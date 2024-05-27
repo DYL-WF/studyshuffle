@@ -1,10 +1,6 @@
 package net.sytes.studyshuffle.controllers;
-import java.io.IOException;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class ClientController {
@@ -19,10 +15,14 @@ public class ClientController {
     }
 
     @GetMapping("/")
-    public void Index(HttpServletResponse httpResponse) throws IOException {
-        httpResponse.sendRedirect("/home");
+    public String Home()  {
+        return "index";
     }
 
+    @GetMapping("/index")
+    public String Index() {
+        return "index";
+    }
 
 
 }
